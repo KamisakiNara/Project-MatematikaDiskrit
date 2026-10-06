@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LogicLab - Pemeriksa Proposisi</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mu:#667;--bd:#dde1ec;--ac:#4f46e5;--t:#0f9d58;--f:#d93025;--tb:#e6f6ec;--fb:#fdeaea}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141c;--card:#1b1e29;--tx:#e8eaf2;--mu:#9aa;--bd:#2c3142;--ac:#8b85ff;--t:#4cd08a;--f:#ff7b72;--tb:#16301f;--fb:#3a1b1d}}
+:root[data-theme="dark"]{--bg:#12141c;--card:#1b1e29;--tx:#e8eaf2;--mu:#9aa;--bd:#2c3142;--ac:#8b85ff;--t:#4cd08a;--f:#ff7b72;--tb:#16301f;--fb:#3a1b1d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{margin:8px 0 0;font-size:1.7rem}h1 span{color:var(--ac)}
+.sub{color:var(--mu);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tabs button{flex:1;padding:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+input[type=text]{width:100%;padding:12px;font-size:1.1rem;font-family:ui-monospace,Consolas,monospace;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);margin:6px 0}
+.ops{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.ops button,.ex button,.go{padding:8px 12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:8px;cursor:pointer;font-size:1rem}
+.go{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:700;margin-top:6px}
+.ex{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;color:var(--mu);font-size:.9rem}
+.hint{color:var(--mu);font-size:.85rem}
+.err{color:var(--f);font-weight:600}
+.badge{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:800;color:#fff}
+.b-t{background:var(--t)}.b-f{background:var(--f)}.b-c{background:var(--ac)}
+.wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:ui-monospace,Consolas,monospace;font-size:.95rem}
+th,td{border:1px solid var(--bd);padding:6px 10px;text-align:center;white-space:nowrap}
+th{background:var(--bg)}
+td.T{color:var(--t)}td.F{color:var(--f)}
+tbody tr{cursor:pointer}tbody tr.sel{outline:2px solid var(--ac);outline-offset:-2px}
+tr .fin{font-weight:800}
+tr.rt .fin{background:var(--tb)}tr.rf .fin{background:var(--fb)}
+.det{background:var(--bg);border-radius:10px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:.92rem;overflow-x:auto}
+.det div{margin:3px 0}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main>
+<h1>Logic<span>Lab</span> 🧪</h1>
+<p class="sub">Pemeriksa proposisi: tabel kebenaran, klasifikasi, dan Mode Detektif untuk membuktikan hasilnya.</p>
+
+<div class="tabs">
+<button id="t1" class="on">Periksa Ekspresi</button>
+<button id="t2">Uji Ekuivalensi</button>
+</div>
+
+<section id="p1">
+<div class="card">
+<label for="e1"><b>Ekspresi logika</b></label>
+<input type="text" id="e1" value="(P → Q) ↔ (¬Q → ¬P)" autocomplete="off" spellcheck="false">
+<div class="ops" data-t="e1">
+<button>¬</button><button>∧</button><button>∨</button><button>→</button><button>↔</button><button>⊕</button><button>(</button><button>)</button>
+</div>
+<div class="hint">Variabel: huruf (P, Q, R, ...; huruf v dipakai sebagai "atau"). Boleh ketik: ~ atau ! (not), &amp; atau ^ (and), | (or), -&gt; (implikasi), &lt;-&gt; (bikonditional), ⊕ (xor). Maks. 5 variabel.</div>
+<div class="ex">Contoh:
+<button>P ∨ ¬P</button><button>P ∧ ¬P</button><button>(P → Q) ∧ P</button><button>(P → Q) ↔ (¬Q → ¬P)</button>
+</div>
+<button class="go" id="g1">Periksa</button>
+</div>
+<div id="o1"></div>
+</section>
+
+<section id="p2" class="hide">
+<div class="card">
+<b>Dua ekspresi, apakah ekuivalen (≡)?</b>
+<input type="text" id="e2a" value="P → Q" autocomplete="off" spellcheck="false">
+<input type="text" id="e2b" value="¬P ∨ Q" autocomplete="off" spellcheck="false">
+<div class="ex">Contoh De Morgan:
+<button data-a="¬(P ∧ Q)" data-b="¬P ∨ ¬Q">¬(P ∧ Q) vs ¬P ∨ ¬Q</button>
+<button data-a="P → Q" data-b="Q → P">P → Q vs Q → P</button>
+</div>
+<button class="go" id="g2">Bandingkan</button>
+</div>
+<div id="o2"></div>
+</section>
+</main>
+
+<script>
+const SYM={'∧':'&','^':'&','&':'&','∨':'|','|':'|','¬':'!','~':'!','!':'!','→':'>','↔':'=','⊕':'x'};
+const SH={'&':'∧','|':'∨','>':'→','=':'↔','x':'⊕'};
+function tok(s){const r=[];let i=0;while(i<s.length){const c=s[i];
+ if(/\s/.test(c)){i++;continue}
+ if(s.startsWith('<->',i)){r.push('=');i+=3;continue}
+ if(s.startsWith('->',i)){r.push('>');i+=2;continue}
+ if(c=='('||c==')'){r.push(c);i++;continue}
+ if(SYM[c]){r.push(SYM[c]);i++;continue}
+ if(/[vV]/.test(c)){r.push('|');i++;continue}
+ if(/[A-Za-z]/.test(c)){r.push('V:'+c.toUpperCase());i++;continue}
+ throw new Error('Karakter tidak dikenal: "'+c+'"')}
+ return r}
+function parse(s){const t=tok(s);if(!t.length)throw new Error('Ekspresi kosong');let i=0;
+ const pk=()=>t[i];
+ function iff(){let l=imp();while(pk()=='='){i++;l={t:'b',o:'=',l,r:imp()}}return l}
+ function imp(){const l=or();if(pk()=='>'){i++;return{t:'b',o:'>',l,r:imp()}}return l}
+ function or(){let l=and();while(pk()=='|'||pk()=='x'){const o=t[i++];l={t:'b',o,l,r:and()}}return l}
+ function and(){let l=un();while(pk()=='&'){i++;l={t:'b',o:'&',l,r:un()}}return l}
+ function un(){const k=pk();
+  if(k=='!'){i++;return{t:'n',a:un()}}
+  if(k=='('){i++;const e=iff();if(pk()!=')')throw new Error('Kurung tutup ")" kurang');i++;return e}
+  if(k&&k.startsWith('V:')){i++;return{t:'v',n:k[2]}}
+  throw new Error('Ekspresi tidak lengkap atau urutan operator salah')}
+ const e=iff();if(i<t.length)throw new Error('Ada sisa token yang tidak dikenali (cek kurung/operator)');return e}
+function str(n,top){if(n.t=='v')return n.n;if(n.t=='n')return'¬'+str(n.a);
+ const s=str(n.l)+' '+SH[n.o]+' '+str(n.r);return top?s:'('+s+')'}
+function vars(n,s=new Set()){if(n.t=='v')s.add(n.n);else if(n.t=='n')vars(n.a,s);else{vars(n.l,s);vars(n.r,s)}return s}
+function ev(n,e){if(n.t=='v')return e[n.n];if(n.t=='n')return!ev(n.a,e);
+ const a=ev(n.l,e),b=ev(n.r,e);
+ return n.o=='&'?a&&b:n.o=='|'?a||b:n.o=='>'?(!a||b):n.o=='='?a==b:a!=b}
+function subs(n,l=[]){if(n.t=='v')return l;if(n.t=='n')subs(n.a,l);else{subs(n.l,l);subs(n.r,l)}
+ const s=str(n,1);if(!l.some(x=>x.s==s))l.push({s,n});return l}
+function sub(n,e,top){const L=b=>b?'T':'F';if(n.t=='v')return L(e[n.n]);if(n.t=='n')return'¬'+sub(n.a,e);
+ const s=sub(n.l,e)+' '+SH[n.o]+' '+sub(n.r,e);return top?s:'('+s+')'}
+function rows(vs){const out=[],n=vs.length;for(let m=0;m<(1<<n);m++){const e={};vs.forEach((v,j)=>e[v]=!((m>>(n-1-j))&1));out.push(e)}return out}
+const L=b=>b?'T':'F';
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+let cur1=null;
+function check(){const o=$('o1');
+ try{const ast=parse($('e1').value);const vs=[...vars(ast)].sort();
+  if(!vs.length)throw new Error('Tidak ada variabel');if(vs.length>5)throw new Error('Maksimal 5 variabel');
+  const rs=rows(vs),sb=subs(ast);if(!sb.length)throw new Error('Tambahkan operator');
+  const res=rs.map(e=>ev(ast,e)),nt=res.filter(x=>x).length;
+  const cls=nt==rs.length?['TAUTOLOGI','b-t','Semua baris bernilai T.']:nt==0?['KONTRADIKSI','b-f','Semua baris bernilai F.']:['KONTINGENSI','b-c','Ada baris T dan ada baris F.'];
+  cur1={ast,vs,rs,sb,res};
+  let h='<div class="card"><span class="badge '+cls[1]+'">'+cls[0]+'</span> <span class="hint">'+cls[2]+' ('+nt+' dari '+rs.length+' baris bernilai T)</span>';
+  h+='<h3>Mode Detektif 🔍</h3><div id="dt"></div></div>';
+  h+='<div class="card"><b>Tabel kebenaran</b> <span class="hint">(klik baris untuk melihat perhitungan manualnya)</span><div class="wrap"><table><thead><tr>'+vs.map(v=>'<th>'+v+'</th>').join('')+sb.map((x,i)=>'<th'+(i==sb.length-1?' class="fin"':'')+'>'+esc(x.s)+'</th>').join('')+'</tr></thead><tbody>';
+  rs.forEach((e,k)=>{h+='<tr data-k="'+k+'" class="'+(res[k]?'rt':'rf')+'">'+vs.map(v=>'<td class="'+L(e[v])+'">'+L(e[v])+'</td>').join('')+sb.map((x,i)=>{const v=ev(x.n,e);return'<td class="'+L(v)+(i==sb.length-1?' fin':'')+'">'+L(v)+'</td>'}).join('')+'</tr>'});
+  h+='</tbody></table></div></div><div class="card"><b>Validasi manual baris terpilih</b><div class="det" id="dv"></div></div>';
+  o.innerHTML=h;
+  const wi=res.indexOf(true),fi=res.indexOf(false);
+  const desc=k=>vs.map(v=>v+'='+L(rs[k][v])).join(', ');
+  let d=cls[0]=='KONTINGENSI'?'<div>✅ Saksi bernilai T: '+desc(wi)+'</div><div>❌ Saksi bernilai F (contoh penyangkal tautologi): '+desc(fi)+'</div><div class="hint">Karena ada dua baris berbeda hasil, ekspresi ini bukan tautologi maupun kontradiksi.</div>':
+   cls[0]=='TAUTOLOGI'?'<div>Tidak ditemukan contoh penyangkal setelah memeriksa '+rs.length+' baris. Ekspresi selalu benar.</div>':'<div>Tidak ditemukan satu pun baris yang membuat ekspresi benar. Ekspresi selalu salah.</div>';
+  $('dt').innerHTML=d;
+  o.querySelectorAll('tbody tr').forEach(tr=>tr.onclick=()=>pick(+tr.dataset.k));
+  pick(cls[0]=='KONTINGENSI'?fi:0);
+ }catch(x){o.innerHTML='<div class="card err">⚠ '+esc(x.message)+'</div>'}}
+function pick(k){const{ast,vs,rs,sb,res}=cur1,e=rs[k];
+ document.querySelectorAll('#o1 tbody tr').forEach(r=>r.classList.toggle('sel',+r.dataset.k==k));
+ let h='<div>Nilai awal: '+vs.map(v=>v+' = '+L(e[v])).join(', ')+'</div>';
+ sb.forEach(x=>{h+='<div>'+esc(x.s)+' = '+esc(sub(x.n,e,1))+' = <b>'+L(ev(x.n,e))+'</b></div>'});
+ h+='<div>➜ Hasil akhir baris ini: <b>'+L(res[k])+'</b></div>';$('dv').innerHTML=h}
+
+function equiv(){const o=$('o2');
+ try{const a=parse($('e2a').value),b=parse($('e2b').value);
+  const vs=[...new Set([...vars(a),...vars(b)])].sort();if(vs.length>5)throw new Error('Maksimal 5 variabel');
+  const rs=rows(vs);const diff=rs.filter(e=>ev(a,e)!=ev(b,e));
+  let h='<div class="card"><span class="badge '+(diff.length?'b-f':'b-t')+'">'+(diff.length?'TIDAK EKUIVALEN':'EKUIVALEN (≡)')+'</span>';
+  h+='<div class="hint">'+(diff.length?'Ditemukan '+diff.length+' baris yang hasilnya berbeda.':'Kedua ekspresi bernilai sama pada seluruh '+rs.length+' baris, jadi bikonditional keduanya adalah tautologi.')+'</div></div>';
+  h+='<div class="card wrap"><table><thead><tr>'+vs.map(v=>'<th>'+v+'</th>').join('')+'<th>'+esc(str(a,1))+'</th><th>'+esc(str(b,1))+'</th><th>Sama?</th></tr></thead><tbody>';
+  rs.forEach(e=>{const x=ev(a,e),y=ev(b,e);h+='<tr class="'+(x==y?'rt':'rf')+'">'+vs.map(v=>'<td class="'+L(e[v])+'">'+L(e[v])+'</td>').join('')+'<td class="'+L(x)+'">'+L(x)+'</td><td class="'+L(y)+'">'+L(y)+'</td><td class="fin">'+(x==y?'✔':'✘')+'</td></tr>'});
+  o.innerHTML=h+'</tbody></table></div>'}catch(x){o.innerHTML='<div class="card err">⚠ '+esc(x.message)+'</div>'}}
+
+$('g1').onclick=check;$('g2').onclick=equiv;
+$('e1').addEventListener('keydown',e=>{if(e.key=='Enter')check()});
+document.querySelectorAll('.ops button').forEach(b=>b.onclick=()=>{const i=$('e1');i.value+=b.textContent;i.focus()});
+document.querySelectorAll('#p1 .ex button').forEach(b=>b.onclick=()=>{$('e1').value=b.textContent;check()});
+document.querySelectorAll('#p2 .ex button').forEach(b=>b.onclick=()=>{$('e2a').value=b.dataset.a;$('e2b').value=b.dataset.b;equiv()});
+function tab(n){$('p1').classList.toggle('hide',n!=1);$('p2').classList.toggle('hide',n!=2);$('t1').classList.toggle('on',n==1);$('t2').classList.toggle('on',n==2)}
+$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);
+check();equiv();
+</script>
+</body>
+</html>
