@@ -4,10 +4,10 @@ Project 3 Hari Matematika Diskrit, Program Studi Ilmu Komputer (UNIMED)
 Dosen: Nurul Maulida Surbakti, M.Si.
 Kelompok: 1
 Anggota:
-Muhammad Kahfi	4253250020
-Muhammad Raihan Syahfitrah	4253250032
-Muhammad Zidane Ariefani	4253250048
-Siti Syafa Marwa	4251250017
+- Muhammad Kahfi	4253250020
+- Muhammad Raihan Syahfitrah	4253250032
+- Muhammad Zidane Ariefani	4253250048
+- Siti Syafa Marwa	4251250017
 
 Website sederhana untuk membuat **tabel kebenaran** dan menentukan sebuah ekspresi logika termasuk **tautologi**, **kontradiksi**, atau **kontingensi**.
 
